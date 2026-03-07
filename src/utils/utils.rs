@@ -3,7 +3,7 @@ use std::fs::Metadata;
 use std::os::unix::fs::PermissionsExt;
 
 pub fn get_type(mt: Metadata) -> String {
-    if is_executable(&mt) {
+    if is_executable(&mt) && !mt.is_dir() {
         return "executable file".to_owned();
     } else if mt.is_file() {
         String::from("regular file")
