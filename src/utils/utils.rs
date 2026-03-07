@@ -1,8 +1,11 @@
 use chrono::{DateTime, Local, TimeZone};
 use std::fs::Metadata;
+use std::os::unix::fs::PermissionsExt;
 
 pub fn get_type(mt: Metadata) -> String {
-    if mt.is_file() {
+    if is_executable(&mt) {
+        return "executable file".to_owned();
+    } else if mt.is_file() {
         String::from("regular file")
     } else if mt.is_dir() {
         String::from("directory file")
@@ -51,4 +54,10 @@ pub fn format_memory_blocks(block: u64) -> String {
     } else {
         return String::from("blocks more than terabytes are unimplemented");
     }
+}
+
+pub fn is_executable(metadata: &Metadata) -> bool {
+    let perms = metadata.permissions();
+    let mode = perms.mode();
+    if mode & 0o111 != 0 { true } else { false }
 }
